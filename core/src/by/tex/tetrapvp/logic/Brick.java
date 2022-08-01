@@ -4,10 +4,6 @@ package by.tex.tetrapvp.logic;
  * A simple 1x1 cell-brick. Every {@link by.tex.tetrapvp.logic.shapes.Shape} consists of 4 of them.
  */
 public class Brick {
-    enum Color{
-        RED, ORANGE, YELLOW, GREEN, CYAN, BLUE, PURPLE;
-    }
-
     private Color color;
     /**
      * Horizontal position on grid. From left to right.
