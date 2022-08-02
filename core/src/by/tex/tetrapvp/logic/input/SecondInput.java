@@ -19,10 +19,20 @@ public class SecondInput extends PlayerInput {
                 presenter.moveShapeRight();
                 return true;
             case Input.Keys.DOWN:
-                presenter.moveShapeDown();
+                presenter.setAccelerated(true);
                 return true;
             case Input.Keys.UP:
                 presenter.rotateShape(true);
+                return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean keyUp (int keycode) {
+        switch (keycode) {
+            case Input.Keys.DOWN:
+                presenter.setAccelerated(false);
                 return true;
         }
         return false;

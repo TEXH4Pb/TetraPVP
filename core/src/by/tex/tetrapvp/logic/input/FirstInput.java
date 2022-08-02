@@ -18,10 +18,20 @@ public class FirstInput extends PlayerInput{
                 presenter.moveShapeRight();
                 return true;
             case Input.Keys.S:
-                presenter.moveShapeDown();
+                presenter.setAccelerated(true);
                 return true;
             case Input.Keys.W:
                 presenter.rotateShape(true);
+                return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean keyUp (int keycode) {
+        switch (keycode) {
+            case Input.Keys.S:
+                presenter.setAccelerated(false);
                 return true;
         }
         return false;
