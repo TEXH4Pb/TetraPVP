@@ -2,26 +2,42 @@ package by.tex.tetrapvp.logic;
 
 import by.tex.tetrapvp.logic.shapes.*;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class GamePresenter {
     public static final int GRID_HEIGHT = 20;
     public static final int GRID_WIDTH = 10;
+    public static final float START_CAP = 1f;
     private final Random random;
     private final Brick[][] grid;
     private Shape shape;
+
+    private float timerCap;
+    private float timer;
     //TODO: player managment
 
     public GamePresenter() {
         random = new Random();
         grid = new Brick[GRID_WIDTH][GRID_HEIGHT];
+        timer = 0;
+        timerCap = START_CAP;
 
         addRandomShape();
+    }
+
+    public void update(float delta) {
+        timer += delta;
+        if(timer >= timerCap) {
+            timer -= timerCap;
+            moveShapeDown();
+        }
     }
 
     public void moveShapeDown() {
         if(!canMoveShapeDown()) {
             shape.stop();
+            checkLines();
             addRandomShape();
             return;
         }
@@ -102,6 +118,34 @@ public class GamePresenter {
         shape = getRandomShape();
         for (Brick brick: shape.getBricks()) {
             grid[brick.getX()][brick.getY()] = brick;
+        }
+    }
+
+    private void checkLines() {
+        for(int y = GRID_HEIGHT - 1, counter = 0; y >= 0; y--, counter = 0) {
+            for(int x = 0; x < GRID_WIDTH; x++)
+                if(grid[x][y] != null)
+                    counter++;
+            if(counter == GRID_WIDTH) {
+                emptyLine(y);
+                dropLine(y + 1);
+            }
+        }
+    }
+
+    private void emptyLine(int line) {
+        for(int x = 0; x < GRID_WIDTH; x++)
+            grid[x][line] = null;
+    }
+
+    private void dropLine(int line) {
+        for(int y = line; y < GRID_HEIGHT; y++) {
+            for(int x = 0; x < GRID_WIDTH; x++) {
+                grid[x][y - 1] = grid[x][y];
+                if(grid[x][y] != null)
+                    grid[x][y].moveDown();
+                grid[x][y] = null;
+            }
         }
     }
 

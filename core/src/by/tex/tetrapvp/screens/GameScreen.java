@@ -48,7 +48,7 @@ public class GameScreen extends ScreenAdapter {
                         presenter.moveShapeDown();
                         return true;
                     case Input.Keys.UP:
-                        presenter.rotateShape(false);
+                        presenter.rotateShape(true);
                         return true;
                 }
                 return false;
@@ -58,6 +58,8 @@ public class GameScreen extends ScreenAdapter {
 
     @Override
     public void render(float delta) {
+        presenter.update(delta);
+
         ScreenUtils.clear(com.badlogic.gdx.graphics.Color.GRAY);
         ShapeRenderer shapeRenderer = new ShapeRenderer();
         float gridOffsetX = (Gdx.graphics.getWidth() / 2) - (presenter.GRID_WIDTH / 2 * cellSize);
