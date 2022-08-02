@@ -19,7 +19,8 @@ public class GameScreen extends ScreenAdapter {
 
     private static final FirstInput FIRST_PLAYER_INPUT = new FirstInput(presenter);
     private static final SecondInput SECOND_PLAYER_INPUT = new SecondInput(presenter);
-    private int cellSize;
+    private float cellSize;
+    private float scale;
     private SpriteBatch batch;
     private ShapeRenderer shapeRenderer;
     private Texture red, orange, yellow, green, cyan, blue, purple;
@@ -35,7 +36,7 @@ public class GameScreen extends ScreenAdapter {
         cyan = new Texture(Gdx.files.internal("bricks/cyan.png"));
         blue = new Texture(Gdx.files.internal("bricks/blue.png"));
         purple = new Texture(Gdx.files.internal("bricks/purple.png"));
-        cellSize = red.getWidth() * 3;
+        recalcScale();
         font = new BitmapFont();
 
         Controllers.addListener(FIRST_PLAYER_INPUT);
@@ -52,8 +53,8 @@ public class GameScreen extends ScreenAdapter {
         presenter.update(delta);
 
         ScreenUtils.clear(com.badlogic.gdx.graphics.Color.GRAY);
-        float gridOffsetX = (Gdx.graphics.getWidth() / 2) - (presenter.GRID_WIDTH / 2 * cellSize);
-        float gridOffsetY = (Gdx.graphics.getHeight() / 2) - (presenter.GRID_HEIGHT / 2 * cellSize);
+        float gridOffsetX = ((float)Gdx.graphics.getWidth() / 2) - ((float)presenter.GRID_WIDTH / 2 * cellSize);
+        float gridOffsetY = ((float)Gdx.graphics.getHeight() / 2) - ((float)presenter.GRID_HEIGHT / 2 * cellSize);
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(com.badlogic.gdx.graphics.Color.BLACK);
@@ -62,7 +63,7 @@ public class GameScreen extends ScreenAdapter {
 
         Brick brick;
         batch.begin();
-        font.getData().setScale(3f);
+        font.getData().setScale(scale);
         String score = String.format("%s score: %d", presenter.getPlayers()[0].name, presenter.getPlayers()[0].getScore());
         font.setColor(presenter.getActivePlayer() == 0 ? com.badlogic.gdx.graphics.Color.WHITE : com.badlogic.gdx.graphics.Color.BLACK);
         font.draw(batch, score, Gdx.graphics.getWidth() * 0.05f, Gdx.graphics.getHeight() * 0.9f);
@@ -85,6 +86,13 @@ public class GameScreen extends ScreenAdapter {
     public void resize (int width, int height) {
         batch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
+        recalcScale();
+    }
+
+    private void recalcScale() {
+        scale = (float) Gdx.graphics.getWidth() / 640;
+        scale *= (16f/9) / ((float)Gdx.graphics.getWidth() / Gdx.graphics.getHeight());
+        cellSize = red.getWidth() * scale;
     }
 
     @Override
