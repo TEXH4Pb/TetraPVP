@@ -16,6 +16,10 @@ public abstract class Shape {
         return bricks;
     }
 
+    public boolean canBeRotated() {
+        return true;
+    }
+
     public void stop() {
         for (Brick brick : bricks) {
             brick.stop();

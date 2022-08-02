@@ -16,4 +16,9 @@ public class OShape extends Shape {
     public Color getDefaultColor() {
         return Color.GREEN;
     }
+
+    @Override
+    public boolean canBeRotated() {
+        return false;
+    }
 }
