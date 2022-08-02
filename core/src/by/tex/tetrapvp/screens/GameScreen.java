@@ -3,23 +3,28 @@ package by.tex.tetrapvp.screens;
 import by.tex.tetrapvp.logic.Brick;
 import by.tex.tetrapvp.logic.Color;
 import by.tex.tetrapvp.logic.GamePresenter;
+import by.tex.tetrapvp.logic.input.FirstInput;
+import by.tex.tetrapvp.logic.input.SecondInput;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 public class GameScreen extends ScreenAdapter {
+    private static GamePresenter presenter = new GamePresenter();
+
+    private static final FirstInput FIRST_PLAYER_INPUT = new FirstInput(presenter);
+    private static final SecondInput SECOND_PLAYER_INPUT = new SecondInput(presenter);
     private int cellSize;
-    private GamePresenter presenter;
     private SpriteBatch batch;
     private Texture red, orange, yellow, green, cyan, blue, purple;
+    private BitmapFont font;
 
     public GameScreen() {
-        presenter = new GamePresenter();
         batch = new SpriteBatch(256);
         red = new Texture(Gdx.files.internal("bricks/red.png"));
         orange = new Texture(Gdx.files.internal("bricks/orange.png"));
@@ -29,31 +34,15 @@ public class GameScreen extends ScreenAdapter {
         blue = new Texture(Gdx.files.internal("bricks/blue.png"));
         purple = new Texture(Gdx.files.internal("bricks/purple.png"));
         cellSize = red.getWidth();
+        font = new BitmapFont();
+
+        Controllers.addListener(FIRST_PLAYER_INPUT);
+        Controllers.addListener(SECOND_PLAYER_INPUT);
     }
 
     @Override
     public void show() {
-        Gdx.input.setInputProcessor(new InputAdapter() {
-            @Override
-            public boolean keyDown(int keycode)
-            {
-                switch (keycode) {
-                    case Input.Keys.LEFT:
-                        presenter.moveShapeLeft();
-                        return true;
-                    case Input.Keys.RIGHT:
-                        presenter.moveShapeRight();
-                        return true;
-                    case Input.Keys.DOWN:
-                        presenter.moveShapeDown();
-                        return true;
-                    case Input.Keys.UP:
-                        presenter.rotateShape(true);
-                        return true;
-                }
-                return false;
-            }
-        });
+        updateInput();
     }
 
     @Override
@@ -72,6 +61,13 @@ public class GameScreen extends ScreenAdapter {
 
         Brick brick;
         batch.begin();
+        String score = String.format("%s score: %d", presenter.getPlayers()[0].name, presenter.getPlayers()[0].getScore());
+        font.setColor(presenter.getActivePlayer() == 0 ? com.badlogic.gdx.graphics.Color.WHITE : com.badlogic.gdx.graphics.Color.BLACK);
+        font.draw(batch, score, Gdx.graphics.getWidth() * 0.05f, Gdx.graphics.getHeight() * 0.9f);
+        score = String.format("%s score: %d", presenter.getPlayers()[1].name, presenter.getPlayers()[1].getScore());
+        font.setColor(presenter.getActivePlayer() == 1 ? com.badlogic.gdx.graphics.Color.WHITE : com.badlogic.gdx.graphics.Color.BLACK);
+        font.draw(batch, score, Gdx.graphics.getWidth() * 0.75f, Gdx.graphics.getHeight() * 0.9f);
+
         for(int y = 0; y < presenter.GRID_HEIGHT; y++) {
             for(int x = 0; x < presenter.GRID_WIDTH; x++) {
                 brick = presenter.getBrick(x, y);
@@ -98,6 +94,16 @@ public class GameScreen extends ScreenAdapter {
         cyan.dispose();
         blue.dispose();
         purple.dispose();
+        font.dispose();
+    }
+
+    public static void updateInput() {
+        if(presenter.getActivePlayer() == 0) {
+            Gdx.input.setInputProcessor(FIRST_PLAYER_INPUT);
+        }
+        else {
+            Gdx.input.setInputProcessor(SECOND_PLAYER_INPUT);
+        }
     }
 
     private Texture getSpriteByColor(Color color) {

@@ -1,19 +1,27 @@
 package by.tex.tetrapvp.logic;
 
+import by.tex.tetrapvp.logic.input.FirstInput;
+import by.tex.tetrapvp.logic.input.SecondInput;
 import by.tex.tetrapvp.logic.shapes.*;
+import by.tex.tetrapvp.screens.GameScreen;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 public class GamePresenter {
     public static final int GRID_HEIGHT = 20;
     public static final int GRID_WIDTH = 10;
     public static final float START_CAP = 1f;
+
+    private Player[] players;
+    private int activePlayer;
+    private int topLine;
+    private boolean accelerated;
     private final Random random;
     private final Brick[][] grid;
     private Shape shape;
 
     private float timerCap;
+    private float acceleratedCap;
     private float timer;
     //TODO: player managment
 
@@ -22,6 +30,13 @@ public class GamePresenter {
         grid = new Brick[GRID_WIDTH][GRID_HEIGHT];
         timer = 0;
         timerCap = START_CAP;
+        acceleratedCap = timerCap / 20;
+        players = new Player[2];
+        players[0] = new Player("P1", new FirstInput(this));
+        players[1] = new Player("P2", new SecondInput(this));
+        activePlayer = 0;
+        topLine = 1;
+        accelerated = false;
 
         addRandomShape();
     }
@@ -32,13 +47,29 @@ public class GamePresenter {
             timer -= timerCap;
             moveShapeDown();
         }
+        else if (accelerated && timer >= acceleratedCap) {
+            timer = 0;
+            moveShapeDown();
+        }
+    }
+
+    public void switchPlayers() {
+        accelerated = false;
+        activePlayer = (activePlayer + 1) % 2;
+        GameScreen.updateInput();
+    }
+
+    public void setAccelerated(boolean accelerated) {
+        this.accelerated = accelerated;
     }
 
     public void moveShapeDown() {
         if(!canMoveShapeDown()) {
             shape.stop();
-            checkLines();
+            if(!checkLines())
+                topLinePenalty();
             addRandomShape();
+            switchPlayers();
             return;
         }
 
@@ -114,6 +145,36 @@ public class GamePresenter {
         return grid[x][y];
     }
 
+    public Player[] getPlayers() {
+        return players;
+    }
+
+    public int getActivePlayer() {
+        return activePlayer;
+    }
+
+    private void topLinePenalty() {
+        int newTopLine = topLine;
+        for(Brick B : shape.getBricks()) {
+            if(B.getY() > newTopLine)
+                newTopLine = B.getY();
+        }
+
+        for (int i = newTopLine - topLine; i > 0; i--)
+            players[activePlayer].addScore(-i);
+        topLine = newTopLine;
+    }
+
+    private void updateTopLine() {
+        for (int y = GRID_HEIGHT - 1; y >= 0; y--)
+            for (int x = 0; x < GRID_WIDTH; x++)
+                if (grid[x][y] != null) {
+                    topLine = y;
+                    return;
+                }
+        topLine = 0;
+    }
+
     private void addRandomShape() {
         shape = getRandomShape();
         for (Brick brick: shape.getBricks()) {
@@ -121,16 +182,25 @@ public class GamePresenter {
         }
     }
 
-    private void checkLines() {
+    private boolean checkLines() {
+        int cleaned = 0;
         for(int y = GRID_HEIGHT - 1, counter = 0; y >= 0; y--, counter = 0) {
             for(int x = 0; x < GRID_WIDTH; x++)
                 if(grid[x][y] != null)
                     counter++;
             if(counter == GRID_WIDTH) {
+                cleaned++;
                 emptyLine(y);
                 dropLine(y + 1);
             }
         }
+        if(cleaned == 0)
+            return false;
+
+        updateTopLine();
+        for (int i = cleaned; i > 0; i--)
+            players[activePlayer].addScore(i);
+        return true;
     }
 
     private void emptyLine(int line) {
