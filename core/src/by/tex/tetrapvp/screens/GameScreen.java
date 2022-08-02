@@ -21,11 +21,13 @@ public class GameScreen extends ScreenAdapter {
     private static final SecondInput SECOND_PLAYER_INPUT = new SecondInput(presenter);
     private int cellSize;
     private SpriteBatch batch;
+    private ShapeRenderer shapeRenderer;
     private Texture red, orange, yellow, green, cyan, blue, purple;
     private BitmapFont font;
 
     public GameScreen() {
-        batch = new SpriteBatch(256);
+        batch = new SpriteBatch();
+        shapeRenderer = new ShapeRenderer();
         red = new Texture(Gdx.files.internal("bricks/red.png"));
         orange = new Texture(Gdx.files.internal("bricks/orange.png"));
         yellow = new Texture(Gdx.files.internal("bricks/yellow.png"));
@@ -33,7 +35,7 @@ public class GameScreen extends ScreenAdapter {
         cyan = new Texture(Gdx.files.internal("bricks/cyan.png"));
         blue = new Texture(Gdx.files.internal("bricks/blue.png"));
         purple = new Texture(Gdx.files.internal("bricks/purple.png"));
-        cellSize = red.getWidth();
+        cellSize = red.getWidth() * 3;
         font = new BitmapFont();
 
         Controllers.addListener(FIRST_PLAYER_INPUT);
@@ -50,7 +52,6 @@ public class GameScreen extends ScreenAdapter {
         presenter.update(delta);
 
         ScreenUtils.clear(com.badlogic.gdx.graphics.Color.GRAY);
-        ShapeRenderer shapeRenderer = new ShapeRenderer();
         float gridOffsetX = (Gdx.graphics.getWidth() / 2) - (presenter.GRID_WIDTH / 2 * cellSize);
         float gridOffsetY = (Gdx.graphics.getHeight() / 2) - (presenter.GRID_HEIGHT / 2 * cellSize);
 
@@ -61,6 +62,7 @@ public class GameScreen extends ScreenAdapter {
 
         Brick brick;
         batch.begin();
+        font.getData().setScale(3f);
         String score = String.format("%s score: %d", presenter.getPlayers()[0].name, presenter.getPlayers()[0].getScore());
         font.setColor(presenter.getActivePlayer() == 0 ? com.badlogic.gdx.graphics.Color.WHITE : com.badlogic.gdx.graphics.Color.BLACK);
         font.draw(batch, score, Gdx.graphics.getWidth() * 0.05f, Gdx.graphics.getHeight() * 0.9f);
@@ -73,10 +75,16 @@ public class GameScreen extends ScreenAdapter {
                 brick = presenter.getBrick(x, y);
                 if(brick == null)
                     continue;
-                batch.draw(getSpriteByColor(brick.getColor()), gridOffsetX + brick.getX() * cellSize, gridOffsetY + brick.getY() * cellSize);
+                batch.draw(getSpriteByColor(brick.getColor()), gridOffsetX + brick.getX() * cellSize, gridOffsetY + brick.getY() * cellSize, cellSize, cellSize);
             }
         }
         batch.end();
+    }
+
+    @Override
+    public void resize (int width, int height) {
+        batch = new SpriteBatch();
+        shapeRenderer = new ShapeRenderer();
     }
 
     @Override
