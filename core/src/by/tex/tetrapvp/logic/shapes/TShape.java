@@ -6,9 +6,9 @@ import by.tex.tetrapvp.logic.Color;
 public class TShape extends Shape{
     public TShape(int x, int y) {
         super();
-        bricks[0] = new Brick(x - 1, y - 1, getDefaultColor());
+        bricks[0] = new Brick(x, y - 1, getDefaultColor());
         bricks[1] = new Brick(x, y, getDefaultColor());
-        bricks[2] = new Brick(x, y - 1, getDefaultColor());
+        bricks[2] = new Brick(x - 1, y - 1, getDefaultColor());
         bricks[3] = new Brick(x + 1, y - 1, getDefaultColor());
     }
 
