@@ -15,10 +15,12 @@ public class GamePresenter {
     private Player[] players;
     private int activePlayer;
     private int topLine;
+    private int lineCounter;
     private boolean accelerated;
     private final Random random;
     private final Brick[][] grid;
     private Shape shape;
+    private boolean paused;
 
     private float timerCap;
     private float acceleratedCap;
@@ -37,11 +39,16 @@ public class GamePresenter {
         activePlayer = 0;
         topLine = 1;
         accelerated = false;
+        lineCounter = 0;
+        paused = false;
 
         addRandomShape();
     }
 
     public void update(float delta) {
+        if(paused)
+            return;
+
         timer += delta;
         if(timer >= timerCap) {
             timer -= timerCap;
@@ -153,6 +160,10 @@ public class GamePresenter {
         return activePlayer;
     }
 
+    public int getTopLine() {
+        return topLine;
+    }
+
     private void topLinePenalty() {
         int newTopLine = topLine;
         for(Brick B : shape.getBricks()) {
@@ -177,6 +188,11 @@ public class GamePresenter {
 
     private void addRandomShape() {
         shape = getRandomShape();
+        for(Brick B : shape.getBricks()) {
+            if(grid[B.getX()][B.getY()] != null)
+                paused = true;
+        }
+
         for (Brick brick: shape.getBricks()) {
             grid[brick.getX()][brick.getY()] = brick;
         }
@@ -206,6 +222,9 @@ public class GamePresenter {
     private void emptyLine(int line) {
         for(int x = 0; x < GRID_WIDTH; x++)
             grid[x][line] = null;
+        lineCounter++;
+        int mod = lineCounter / 10;
+        timerCap = START_CAP * (1 - Math.max((float)mod / 10, 0.3f));
     }
 
     private void dropLine(int line) {
@@ -220,6 +239,9 @@ public class GamePresenter {
     }
 
     private boolean canMoveShapeLeft() {
+        if(paused)
+            return false;
+
         for (Brick brick: shape.getBricks()) {
             if(brick.getX() - 1 < 0)
                 return false;
@@ -232,6 +254,9 @@ public class GamePresenter {
     }
 
     private boolean canMoveShapeRight() {
+        if(paused)
+            return false;
+
         for (Brick brick: shape.getBricks()) {
             if(brick.getX() + 1 >= GRID_WIDTH)
                 return false;
@@ -257,6 +282,8 @@ public class GamePresenter {
 
     private boolean canRotateShape(boolean clockwise) {
         if(!shape.canBeRotated())
+            return false;
+        if(paused)
             return false;
 
         Brick central = shape.getBricks()[0];

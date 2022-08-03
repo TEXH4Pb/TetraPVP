@@ -59,6 +59,8 @@ public class GameScreen extends ScreenAdapter {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(com.badlogic.gdx.graphics.Color.BLACK);
         shapeRenderer.rect(gridOffsetX, gridOffsetY, presenter.GRID_WIDTH * cellSize, presenter.GRID_HEIGHT * cellSize);
+        shapeRenderer.setColor(com.badlogic.gdx.graphics.Color.RED);
+        shapeRenderer.rect(gridOffsetX, gridOffsetY + (presenter.getTopLine() + 1) * cellSize, presenter.GRID_WIDTH * cellSize, cellSize / 16);
         shapeRenderer.end();
 
         Brick brick;
