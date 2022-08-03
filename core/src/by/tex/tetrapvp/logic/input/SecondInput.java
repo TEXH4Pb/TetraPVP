@@ -16,32 +16,16 @@ public class SecondInput extends PlayerInput {
 
         switch (keycode) {
             case Input.Keys.LEFT:
-                presenter.startMoving(MovingState.LEFT);
+                presenter.moveShapeLeft();
                 return true;
             case Input.Keys.RIGHT:
-                presenter.startMoving(MovingState.RIGHT);
+                presenter.moveShapeRight();
                 return true;
             case Input.Keys.DOWN:
-                presenter.setAccelerated(true);
+                presenter.moveShapeDown();
                 return true;
             case Input.Keys.UP:
                 presenter.rotateShape(true);
-                return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean keyUp (int keycode) {
-        switch (keycode) {
-            case Input.Keys.DOWN:
-                presenter.setAccelerated(false);
-                return true;
-            case Input.Keys.LEFT:
-                presenter.stopMovingLeft();
-                return true;
-            case Input.Keys.RIGHT:
-                presenter.stopMovingRight();
                 return true;
         }
         return false;

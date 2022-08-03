@@ -1,6 +1,7 @@
 package by.tex.tetrapvp.logic.input;
 
 import by.tex.tetrapvp.logic.GamePresenter;
+import by.tex.tetrapvp.logic.shapes.Shapes;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.controllers.Controller;
@@ -26,6 +27,30 @@ public abstract class PlayerInput extends InputAdapter implements ControllerList
         if(keycode == Input.Keys.F3) {
             presenter.restart();
             return true;
+        }
+
+        switch (keycode) {
+            case Input.Keys.NUMPAD_0:
+                presenter.addShape(Shapes.O);
+                return true;
+            case Input.Keys.NUMPAD_1:
+                presenter.addShape(Shapes.I);
+                return true;
+            case Input.Keys.NUMPAD_2:
+                presenter.addShape(Shapes.L);
+                return true;
+            case Input.Keys.NUMPAD_3:
+                presenter.addShape(Shapes.J);
+                return true;
+            case Input.Keys.NUMPAD_4:
+                presenter.addShape(Shapes.S);
+                return true;
+            case Input.Keys.NUMPAD_5:
+                presenter.addShape(Shapes.Z);
+                return true;
+            case Input.Keys.NUMPAD_6:
+                presenter.addShape(Shapes.T);
+                return true;
         }
         return false;
     }

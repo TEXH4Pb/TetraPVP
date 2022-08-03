@@ -47,41 +47,41 @@ public class GamePresenter {
         lineCounter = 0;
         paused = false;
 
-        addRandomShape();
+        //addRandomShape();
     }
 
     public void update(float delta) {
         if(paused)
             return;
-
-        switch (movingState) {
-            case LEFT:
-                if(moveTimer <= 0) {
-                    moveShapeLeft();
-                    moveTimer = MOVE_CAP;
-                }
-                else
-                    moveTimer -= delta;
-                break;
-            case RIGHT:
-                if(moveTimer <= 0) {
-                    moveShapeRight();
-                    moveTimer = MOVE_CAP;
-                }
-                else
-                    moveTimer -= delta;
-                break;
-        }
-
-        dropTimer += delta;
-        if(dropTimer >= timerCap) {
-            dropTimer -= timerCap;
-            moveShapeDown();
-        }
-        else if (accelerated && dropTimer >= acceleratedCap) {
-            dropTimer = 0;
-            moveShapeDown();
-        }
+//
+//        switch (movingState) {
+//            case LEFT:
+//                if(moveTimer <= 0) {
+//                    moveShapeLeft();
+//                    moveTimer = MOVE_CAP;
+//                }
+//                else
+//                    moveTimer -= delta;
+//                break;
+//            case RIGHT:
+//                if(moveTimer <= 0) {
+//                    moveShapeRight();
+//                    moveTimer = MOVE_CAP;
+//                }
+//                else
+//                    moveTimer -= delta;
+//                break;
+//        }
+//
+//        dropTimer += delta;
+//        if(dropTimer >= timerCap) {
+//            dropTimer -= timerCap;
+//            moveShapeDown();
+//        }
+//        else if (accelerated && dropTimer >= acceleratedCap) {
+//            dropTimer = 0;
+//            moveShapeDown();
+//        }
     }
 
     public void restart() {
@@ -100,7 +100,6 @@ public class GamePresenter {
         accelerated = false;
         lineCounter = 0;
         paused = false;
-        addRandomShape();
     }
 
     public void switchPlayers() {
@@ -144,7 +143,7 @@ public class GamePresenter {
             shape.stop();
             if(!checkLines())
                 topLinePenalty();
-            addRandomShape();
+            shape = null;
             switchPlayers();
             return;
         }
@@ -253,6 +252,16 @@ public class GamePresenter {
                     return;
                 }
         topLine = 0;
+    }
+
+    public void addShape(Shapes shapeType) {
+        if(this.shape != null)
+            return;
+        shape = getShapeByType(shapeType);
+
+        for (Brick brick: shape.getBricks()) {
+            grid[brick.getX()][brick.getY()] = brick;
+        }
     }
 
     private void addRandomShape() {
@@ -378,13 +387,10 @@ public class GamePresenter {
         return true;
     }
 
-    private Shape getRandomShape() {
-        int pick = random.nextInt(Shapes.values().length);
-        Shapes shape = Shapes.values()[pick];
+    private Shape getShapeByType(Shapes shapeType) {
         int x = GRID_WIDTH / 2;
         int y = GRID_HEIGHT - 1;
-
-        switch (shape) {
+        switch (shapeType) {
             case T:
                 return new TShape(x, y);
             case S:
@@ -402,5 +408,10 @@ public class GamePresenter {
         }
 
         return null;
+    }
+    private Shape getRandomShape() {
+        int pick = random.nextInt(Shapes.values().length);
+        Shapes shape = Shapes.values()[pick];
+        return getShapeByType(shape);
     }
 }

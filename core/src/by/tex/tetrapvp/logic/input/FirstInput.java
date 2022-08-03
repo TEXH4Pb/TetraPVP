@@ -15,32 +15,16 @@ public class FirstInput extends PlayerInput{
 
         switch (keycode) {
             case Input.Keys.A:
-                presenter.startMoving(MovingState.LEFT);
+                presenter.moveShapeLeft();
                 return true;
             case Input.Keys.D:
-                presenter.startMoving(MovingState.RIGHT);
+                presenter.moveShapeRight();
                 return true;
             case Input.Keys.S:
-                presenter.setAccelerated(true);
+                presenter.moveShapeDown();
                 return true;
             case Input.Keys.W:
                 presenter.rotateShape(true);
-                return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean keyUp (int keycode) {
-        switch (keycode) {
-            case Input.Keys.S:
-                presenter.setAccelerated(false);
-                return true;
-            case Input.Keys.A:
-                presenter.stopMovingLeft();
-                return true;
-            case Input.Keys.D:
-                presenter.stopMovingRight();
                 return true;
         }
         return false;
