@@ -13,10 +13,10 @@ public class SecondInput extends PlayerInput {
     {
         switch (keycode) {
             case Input.Keys.LEFT:
-                presenter.moveShapeLeft();
+                presenter.startMoving(MovingState.LEFT);
                 return true;
             case Input.Keys.RIGHT:
-                presenter.moveShapeRight();
+                presenter.startMoving(MovingState.RIGHT);
                 return true;
             case Input.Keys.DOWN:
                 presenter.setAccelerated(true);
@@ -33,6 +33,12 @@ public class SecondInput extends PlayerInput {
         switch (keycode) {
             case Input.Keys.DOWN:
                 presenter.setAccelerated(false);
+                return true;
+            case Input.Keys.LEFT:
+                presenter.stopMovingLeft();
+                return true;
+            case Input.Keys.RIGHT:
+                presenter.stopMovingRight();
                 return true;
         }
         return false;

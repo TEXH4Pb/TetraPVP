@@ -1,6 +1,7 @@
 package by.tex.tetrapvp.logic;
 
 import by.tex.tetrapvp.logic.input.FirstInput;
+import by.tex.tetrapvp.logic.input.MovingState;
 import by.tex.tetrapvp.logic.input.SecondInput;
 import by.tex.tetrapvp.logic.shapes.*;
 import by.tex.tetrapvp.screens.GameScreen;
@@ -11,6 +12,8 @@ public class GamePresenter {
     public static final int GRID_HEIGHT = 20;
     public static final int GRID_WIDTH = 10;
     public static final float START_CAP = 1f;
+    private static final float MOVE_THROTTLE = 0.3f;
+    private static final float MOVE_CAP = 0.05f;
 
     private Player[] players;
     private int activePlayer;
@@ -21,16 +24,17 @@ public class GamePresenter {
     private final Brick[][] grid;
     private Shape shape;
     private boolean paused;
-
+    private MovingState movingState;
     private float timerCap;
     private float acceleratedCap;
-    private float timer;
+    private float dropTimer;
+    private float moveTimer;
     //TODO: player managment
 
     public GamePresenter() {
         random = new Random();
         grid = new Brick[GRID_WIDTH][GRID_HEIGHT];
-        timer = 0;
+        dropTimer = 0;
         timerCap = START_CAP;
         acceleratedCap = timerCap / 20;
         players = new Player[2];
@@ -38,6 +42,7 @@ public class GamePresenter {
         players[1] = new Player("P2", new SecondInput(this));
         activePlayer = 0;
         topLine = 1;
+        movingState = MovingState.IDLE;
         accelerated = false;
         lineCounter = 0;
         paused = false;
@@ -49,25 +54,70 @@ public class GamePresenter {
         if(paused)
             return;
 
-        timer += delta;
-        if(timer >= timerCap) {
-            timer -= timerCap;
+        switch (movingState) {
+            case LEFT:
+                if(moveTimer <= 0) {
+                    moveShapeLeft();
+                    moveTimer = MOVE_CAP;
+                }
+                else
+                    moveTimer -= delta;
+                break;
+            case RIGHT:
+                if(moveTimer <= 0) {
+                    moveShapeRight();
+                    moveTimer = MOVE_CAP;
+                }
+                else
+                    moveTimer -= delta;
+                break;
+        }
+
+        dropTimer += delta;
+        if(dropTimer >= timerCap) {
+            dropTimer -= timerCap;
             moveShapeDown();
         }
-        else if (accelerated && timer >= acceleratedCap) {
-            timer = 0;
+        else if (accelerated && dropTimer >= acceleratedCap) {
+            dropTimer = 0;
             moveShapeDown();
         }
     }
 
     public void switchPlayers() {
         accelerated = false;
+        movingState = MovingState.IDLE;
         activePlayer = (activePlayer + 1) % 2;
         GameScreen.updateInput();
     }
 
     public void setAccelerated(boolean accelerated) {
         this.accelerated = accelerated;
+    }
+
+    public void startMoving(MovingState direction) {
+        switch (direction) {
+            case LEFT:
+                moveShapeLeft();
+                break;
+            case RIGHT:
+                moveShapeRight();
+                break;
+            case IDLE:
+                return;
+        }
+        moveTimer = MOVE_THROTTLE;
+        movingState = direction;
+    }
+
+    public void stopMovingLeft() {
+        if(movingState == MovingState.LEFT)
+            movingState = MovingState.IDLE;
+    }
+
+    public void stopMovingRight() {
+        if(movingState == MovingState.RIGHT)
+            movingState = MovingState.IDLE;
     }
 
     public void moveShapeDown() {

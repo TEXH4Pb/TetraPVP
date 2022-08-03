@@ -40,11 +40,13 @@ public abstract class PlayerInput extends InputAdapter implements ControllerList
             return false;
 
         if(buttonCode == controller.getMapping().buttonDpadLeft)
-            presenter.moveShapeLeft();
+            presenter.startMoving(MovingState.LEFT);
         else if(buttonCode == controller.getMapping().buttonDpadRight)
-            presenter.moveShapeRight();
+            presenter.startMoving(MovingState.RIGHT);
         else if(buttonCode == controller.getMapping().buttonDpadDown)
             presenter.setAccelerated(true);
+        else if (buttonCode == controller.getMapping().buttonDpadUp)
+            presenter.rotateShape(true);
         else if(buttonCode == controller.getMapping().buttonL1)
             presenter.rotateShape(false);
         else if(buttonCode == controller.getMapping().buttonR1)
@@ -60,10 +62,14 @@ public abstract class PlayerInput extends InputAdapter implements ControllerList
             return false;
         if(this.controller == null)
             return false;
-        if(controller.getUniqueId() != this.controller.getUniqueId())
+        if(!controller.getUniqueId().equals(this.controller.getUniqueId()))
             return false;
 
-        if(buttonCode == controller.getMapping().buttonDpadDown)
+        if(buttonCode == controller.getMapping().buttonDpadLeft)
+            presenter.stopMovingLeft();
+        else if(buttonCode == controller.getMapping().buttonDpadRight)
+            presenter.stopMovingRight();
+        else if(buttonCode == controller.getMapping().buttonDpadDown)
             presenter.setAccelerated(false);
         else
             return false;
