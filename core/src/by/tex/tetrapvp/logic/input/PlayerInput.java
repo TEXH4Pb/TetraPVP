@@ -1,6 +1,7 @@
 package by.tex.tetrapvp.logic.input;
 
 import by.tex.tetrapvp.logic.GamePresenter;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
@@ -18,6 +19,15 @@ public abstract class PlayerInput extends InputAdapter implements ControllerList
             controller = Controllers.getControllers().get(number);
         else
             controller = null;
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        if(keycode == Input.Keys.F3) {
+            presenter.restart();
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -51,6 +61,8 @@ public abstract class PlayerInput extends InputAdapter implements ControllerList
             presenter.rotateShape(false);
         else if(buttonCode == controller.getMapping().buttonR1)
             presenter.rotateShape(true);
+        else if(buttonCode == controller.getMapping().buttonBack)
+            presenter.restart();
         else
             return false;
         return true;

@@ -84,6 +84,25 @@ public class GamePresenter {
         }
     }
 
+    public void restart() {
+        for(int x = 0; x < GRID_WIDTH; x++)
+            for(int y = 0; y < GRID_HEIGHT; y++)
+                grid[x][y] = null;
+
+        dropTimer = 0;
+        timerCap = START_CAP;
+        acceleratedCap = timerCap / 20;
+        players[0] = new Player("P1", new FirstInput(this));
+        players[1] = new Player("P2", new SecondInput(this));
+        activePlayer = 0;
+        topLine = 1;
+        movingState = MovingState.IDLE;
+        accelerated = false;
+        lineCounter = 0;
+        paused = false;
+        addRandomShape();
+    }
+
     public void switchPlayers() {
         accelerated = false;
         movingState = MovingState.IDLE;

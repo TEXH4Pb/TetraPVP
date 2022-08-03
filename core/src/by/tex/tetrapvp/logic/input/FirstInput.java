@@ -10,6 +10,9 @@ public class FirstInput extends PlayerInput{
     @Override
     public boolean keyDown(int keycode)
     {
+        if(super.keyDown(keycode))
+            return true;
+
         switch (keycode) {
             case Input.Keys.A:
                 presenter.startMoving(MovingState.LEFT);
